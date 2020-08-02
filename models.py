@@ -19,38 +19,71 @@ def setup_db(app, database_path=database_path):
     db.app = app
     db.init_app(app)
     migrate = Migrate(app, db)     
-    #db.create_all()
+    #db.create_all()                #In comment as migrations shall be used. 
 
 
-'''
-Person
-Have title and release year
-'''
-class Person(db.Model):  
-  __tablename__ = 'People'
+
+class Movies(db.Model):  
+  __tablename__ = 'movies'
+
+  id = Column(db.Integer, primary_key=True)
+  title = Column(String)
+  date = Column(String)
+
+  def __init__(self, title, date):
+    self.title = title
+    self.date = date
+
+  def insert(self):
+    db.session.add(self)
+    db.session.commit()
+  
+  def update(self):
+    db.session.commit()
+
+  def delete(self):
+    db.session.delete(self)
+    db.session.commit()
+
+  def format(self):
+    return {
+      'id': self.id,
+      'title': self.title,
+      'date': self.date
+    }
+
+
+class Actors(db.Model):  
+  __tablename__ = 'actors'
 
   id = Column(db.Integer, primary_key=True)
   name = Column(String)
-  catchphrase = Column(String)
+  gender = Column(String)
+  age = Column(db.Integer)
 
-  def __init__(self, name, catchphrase=""):
+  def __init__(self, name, gender, age):
     self.name = name
-    self.catchphrase = catchphrase
+    self.gender = gender
+    self.age = age
+
+  def insert(self):
+    db.session.add(self)
+    db.session.commit()
+  
+  def update(self):
+    db.session.commit()
+
+  def delete(self):
+    db.session.delete(self)
+    db.session.commit()
 
   def format(self):
     return {
       'id': self.id,
       'name': self.name,
-      'catchphrase': self.catchphrase}
+      'gender': self.gender, 
+      'age': self.age
+    }
 
+  
 
-'''
-Book - Test to see if database migration is working (locally and online)
-Have title and release year
-'''
-class Book(db.Model):  
-  __tablename__ = 'Book'
-
-  id = Column(db.Integer, primary_key=True)
-  name = Column(String)
-  year = Column(String)
