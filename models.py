@@ -42,3 +42,15 @@ class Person(db.Model):
       'id': self.id,
       'name': self.name,
       'catchphrase': self.catchphrase}
+
+
+'''
+Book - Test to see if database migration is working (locally and online)
+Have title and release year
+'''
+class Book(db.Model):  
+  __tablename__ = 'Book'
+
+  id = Column(db.Integer, primary_key=True)
+  name = Column(String)
+  year = Column(String)
