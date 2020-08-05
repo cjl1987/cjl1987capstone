@@ -3,7 +3,7 @@ import unittest
 import json
 from flask_sqlalchemy import SQLAlchemy
 
-from flaskr import create_app
+from app import create_app
 from models import setup_db, Movies, Actors
 
 
@@ -52,11 +52,20 @@ class CapstoneTestCase(unittest.TestCase):
     #Test GET /movies
     def test_get_movies(self):
         res = self.client().get('/movies')
-        data = json.loads(res.data.decode('utf-8'))
+        data = json.loads(res.data.decode('utf-8'))             #Ggfs. nicht korrekt
+        #data = json.loads(res.data)
       
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertTrue(len(data['movies']))
+
+    
+    #Test POST endpoint to create new movie
+    def test_create_new_movie(self):
+        res = self.client().post('/questions', json={'title': 'Men in Black', 'date': '2002'})
+        #data = json.loads(res.data.decode('utf-8'))
+
+        self.assertEqual(res.status_code, 200)
 
 '''
     
@@ -183,3 +192,4 @@ class CapstoneTestCase(unittest.TestCase):
 # Make the tests conveniently executable
 if __name__ == "__main__":
     unittest.main()
+
