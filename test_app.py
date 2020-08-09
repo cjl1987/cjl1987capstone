@@ -23,15 +23,15 @@ class CapstoneTestCase(unittest.TestCase):
 
         #sample movie used in the tests
         self.new_movie = {
-            'title': 'Men in Black',
-            'date': '2002'
+            "title": "Men in Black",
+            "date": "2002"
         }
 
         #sample actor used in the tests
         self.new_actor = {
-            'name': 'Meg Ryan',
-            'gender': 'female', 
-            'age': 32
+            "name": "Meg Ryan",
+            "gender": "female", 
+            "age": 32
         }
 
         # binds the app to the current context
@@ -49,26 +49,27 @@ class CapstoneTestCase(unittest.TestCase):
     Tests to be executed
     """
 
+        
+    #Test POST endpoint to create new movie
+    def test_create_new_movie(self):
+        res = self.client().post('/movies', json={"title": "Men in Black2", "date": "2002"})
+        #data = json.loads(res.data.decode('utf-8'))
+
+        self.assertEqual(res.status_code, 201)
+
+
     #Test GET /movies
     def test_get_movies(self):
         res = self.client().get('/movies')
-        data = json.loads(res.data.decode('utf-8'))             #Ggfs. nicht korrekt
-        #data = json.loads(res.data)
+        data = json.loads(res.data.decode('utf-8')) 
+        selection = Movies.query.all()
+        selection[0].title
       
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertTrue(len(data['movies']))
 
-    
-    #Test POST endpoint to create new movie
-    def test_create_new_movie(self):
-        res = self.client().post('/questions', json={'title': 'Men in Black', 'date': '2002'})
-        #data = json.loads(res.data.decode('utf-8'))
-
-        self.assertEqual(res.status_code, 200)
-
-'''
-    
+'''  
     #Test GET /actors
     def test_get_paginated_questions(self):
         res=self.client().get('/questions')

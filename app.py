@@ -20,9 +20,28 @@ def create_app(test_config=None):
     def be_cool():
         return "Be cool, man, be coooool! You're almost a FSND grad!"
 
+    # GET Movies
+    @app.route('/movies', methods=['GET'])
+    #@requires_auth('post:drinks')                                          #to be uncommented later
+    def get_movie():                                                  # to be replaced by: <def create_drink(jwt):>   JWT!!
+        try:
+            formatted_movies = []
+            movies_all = Movies.query.all()   
+
+            for movie in movies_all: 
+                formatted_movies.append(movie.format())
+            
+
+            # return json response
+            return jsonify({
+                            "success": True,
+                            "movies": formatted_movies,
+                            }), 200
+        except Exception:
+            abort(422)
+
 
     # POST /movie expects a body with 'title' and 'date'
-    # and will returns {"success": True, "movies": [???]}
     @app.route('/movies', methods=['POST'])
     #@requires_auth('post:drinks')                                          #to be uncommented later
     def create_movie():                                                  # to be replaced by: <def create_drink(jwt):>   JWT!!
