@@ -21,7 +21,8 @@ def create_app(test_config=None):
         return "Be cool, man, be coooool! You're almost a FSND grad!"
 
 
-    # GET Movies
+    #-------------------------------------movies-------------------------------------
+    # GET /movies
     @app.route('/movies', methods=['GET'])
     #@requires_auth('post:drinks')                                          #to be uncommented later
     def get_movie():                                                  # to be replaced by: <def create_drink(jwt):>   JWT!!
@@ -41,7 +42,7 @@ def create_app(test_config=None):
             abort(422)
 
 
-    # POST /movie expects a body with 'title' and 'date'
+    # POST /movies expects a body with 'title' and 'date'
     @app.route('/movies', methods=['POST'])
     #@requires_auth('post:drinks')                                          #to be uncommented later
     def create_movie():                                                  # to be replaced by: <def create_drink(jwt):>   JWT!!
@@ -52,7 +53,7 @@ def create_app(test_config=None):
 
         # check whether user input is complete
         if new_title is None:
-            abort(400)                                                 #create here correct error-handler
+            abort(400)                                                
         if new_date is None:
             abort(400)
 
@@ -67,6 +68,57 @@ def create_app(test_config=None):
         except Exception:
             abort(422)
     
+
+
+    #--------------------------------------------actors----------------------------
+    # GET /actors
+    @app.route('/actors', methods=['GET'])
+    #@requires_auth('post:drinks')                                    # to be uncommented later
+    def get_actor():                                                  # to be replaced by: <def create_drink(jwt):>   JWT!!
+        try:
+            formatted_actors = []
+            actors_all = Actors.query.all()   
+
+            for actor in actors_all: 
+                formatted_actors.append(actor.format())
+            
+            # return json response
+            return jsonify({
+                            "success": True,
+                            "movies": formatted_actors,
+                            }), 200
+        except Exception:
+            abort(422)
+
+
+    # POST /actors expects a body with 'name' and 'gender' and 'age'
+    @app.route('/actors', methods=['POST'])
+    #@requires_auth('post:drinks')                                       # to be uncommented later
+    def create_actor():                                                  # to be replaced by: <def create_drink(jwt):>   JWT!!
+        # get json object
+        body = request.get_json()
+        new_name = body.get('name', None)
+        new_gender = body.get('gender', None)
+        new_age = body.get('age', None)
+
+        # check whether user input is complete
+        if new_name is None:
+            abort(400)                                                
+        if new_gender is None:
+            abort(400)
+        if new_age is None:
+            abort(400)
+
+        try:
+            # add row in data base
+            actor = Actors(name=new_name, gender=new_gender, age=new_age)
+            actor.insert()
+            # return json response
+            return jsonify({
+                            "success": True
+                            }), 201
+        except Exception:
+            abort(422)
     
     
     # Error Handling
@@ -80,7 +132,6 @@ def create_app(test_config=None):
                         "message": "unprocessable"
                         }), 422
 
-    '''
     # Error-Handler 404
     @app.errorhandler(404)
     def resource_not_found(error):
@@ -89,7 +140,6 @@ def create_app(test_config=None):
                         "error": 404,
                         "message": "resource not found"
                         }), 404
-    '''
 
     # Error-Handler 400
     @app.errorhandler(400)

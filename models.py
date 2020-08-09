@@ -59,7 +59,7 @@ class Actors(db.Model):
   id = Column(db.Integer, primary_key=True)
   name = Column(String)
   gender = Column(String)
-  age = Column(db.Integer)
+  age = Column(String)
 
   def __init__(self, name, gender, age):
     self.name = name

@@ -31,7 +31,7 @@ class CapstoneTestCase(unittest.TestCase):
         self.new_actor = {
             "name": "Meg Ryan",
             "gender": "female", 
-            "age": 32
+            "age": "32"
         }
 
         # binds the app to the current context
@@ -45,28 +45,69 @@ class CapstoneTestCase(unittest.TestCase):
         """Executed after reach test"""
         pass
 
+    
     """
     Tests to be executed
     """
-
         
     #Test POST endpoint to create new movie
     def test_create_new_movie(self):
         res = self.client().post('/movies', json={"title": "Men in Black2", "date": "2002"})
         data = json.loads(res.data.decode('utf-8'))
-        
         self.assertEqual(res.status_code, 201)
         self.assertEqual(data['success'], True)
 
+    #Test POST endpoint to create new movie - Error
+    def test_create_new_movie_error(self):
+        res = self.client().post('/movies', json={"title": "Men in Black2"})
+        data = json.loads(res.data.decode('utf-8'))
+        self.assertEqual(res.status_code, 400)
+        self.assertEqual(data['success'], False)
 
     #Test GET /movies
     def test_get_movies(self):
         res = self.client().get('/movies')
         data = json.loads(res.data.decode('utf-8')) 
-        
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
-        # self.assertTrue(len(data['movies']))
+
+    #Test GET /movies - Error
+    def test_get_movies_error(self):
+        # Call endpoint with missing 's' at the end
+        res = self.client().get('/movie')                       
+        data = json.loads(res.data.decode('utf-8')) 
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data['success'], False)
+
+    #Test POST endpoint to create new actor
+    def test_create_new_actor(self):
+        res = self.client().post('/actors', json={"name": "Meg Ryan", "gender": "female", "age": "32"})
+        data = json.loads(res.data.decode('utf-8'))
+        self.assertEqual(res.status_code, 201)
+        self.assertEqual(data['success'], True)
+
+    #Test POST endpoint to create new actor - Error
+    def test_create_new_actor_error(self):
+        res = self.client().post('/actors', json={"name": "Meg Ryan", "gender": "female"})
+        data = json.loads(res.data.decode('utf-8'))
+        self.assertEqual(res.status_code, 400)
+        self.assertEqual(data['success'], False)
+
+    #Test GET /actors
+    def test_get_actors(self):
+        res = self.client().get('/actors')
+        data = json.loads(res.data.decode('utf-8'))
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+
+    #Test GET /actors - Error
+    def test_get_actors_error(self):
+        # Call endpoint with missing 's' at the end
+        res = self.client().get('/actor')                       
+        data = json.loads(res.data.decode('utf-8'))
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data['success'], False)
+
 
 '''  
     #Test GET /actors
