@@ -21,7 +21,7 @@ def create_app(test_config=None):
         return "Be cool, man, be coooool! You're almost a FSND grad!"
 
 
-    #-------------------------------------movies-------------------------------------
+    #----------------movies-------------------------------------
     # GET /movies
     @app.route('/movies', methods=['GET'])
     #@requires_auth('post:drinks')                                          #to be uncommented later
@@ -95,8 +95,35 @@ def create_app(test_config=None):
             abort(422)
 
 
+    # PATCH /movies
+    @app.route('/movies/<int:movie_id>', methods=['PATCH'])
+    #@requires_auth('patch:drinks')                                     #uncomment later
+    def movies_update(movie_id):                                   # Origin: def drinks_update(jwt, drink_id): 
+        # load PATCH body
+        body = request.get_json()
+        # get element by id
+        try:
+            movie = Movies.query.filter(Movies.id == movie_id).one_or_none()
+            # error 404
+            if movie is None:
+                abort(404)
+            # prepare body
+            if body.get('title'):
+                movie.title = body.get('title')
+            if body.get('date'):
+                movie.date = body.get('date')
+            # update data base
+            movie.update()
+            return jsonify({
+                            "success": True,
+                            "updated movie": movie.format()
+                            }), 200
+        except Exception:
+            abort(422)
 
-    #--------------------------------------------actors----------------------------
+
+
+    #--------------actors----------------------------
     # GET /actors
     @app.route('/actors', methods=['GET'])
     #@requires_auth('post:drinks')                                    # to be uncommented later
@@ -173,7 +200,37 @@ def create_app(test_config=None):
 
 
 
-    # Error Handling
+    # PATCH /actors
+    @app.route('/actors/<int:actor_id>', methods=['PATCH'])
+    #@requires_auth('patch:drinks')                                     #uncomment later
+    def actors_update(actor_id):                                   # Origin: def drinks_update(jwt, drink_id): 
+        # load PATCH body
+        body = request.get_json()
+        # get element by id
+        try:
+            actor = Actors.query.filter(Actors.id == actor_id).one_or_none()
+            # error 404
+            if actor is None:
+                abort(404)
+            # prepare body
+            if body.get('name'):
+                actor.name = body.get('name')
+            if body.get('gender'):
+                actor.gender = body.get('gender')
+            if body.get('age'):
+                actor.age = body.get('age')
+            # update data base
+            actor.update()
+            return jsonify({
+                            "success": True,
+                            "updated actor": actor.format()
+                            }), 200
+        except Exception:
+            abort(422)
+
+
+
+    # ------------------------Error Handling -------------------
 
     # Error-Handler 422
     @app.errorhandler(422)

@@ -100,28 +100,30 @@ class CapstoneTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 404)
         self.assertEqual(data['success'], False)
         self.assertEqual(bool(movie.id), not None)
-    '''
-    #Test DELETE  /questions/<int:question_id>
-    def test_delete_question_by_id(self):
-        res = self.client().delete('/questions/5')
-        data = json.loads(res.data.decode('utf-8'))
 
-        question = Question.query.filter(Question.id==5).one_or_none()
-
+   #Test PATCH /movies
+    def test_patch_movie(self):
+        setup_response = self.client().post('/movies', json={"title": "Men in Black2", "date": "2002"})
+        data_setup = json.loads(setup_response.data.decode('utf-8'))
+        res = self.client().patch('/movies/'+str(data_setup['movie_id']), json={"title": "Fast and Furious", "date": "2002"} )
+        movie = Movies.query.filter(Movies.id==data_setup['movie_id']).one_or_none()
+        data = json.loads(res.data.decode('utf-8')) 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
-        self.assertEqual(data['deleted_question'], 5)
-        self.assertEqual(question, None)
+        self.assertEqual(movie.title, "Fast and Furious")
 
-    #Test DELETE  /questions/<int:question_id>  - Error
-    def test_422_if_question_does_not_exist(self):
-        res = self.client().delete('/questions/1000')
-        data = json.loads(res.data.decode('utf-8'))
-
+   #Test PATCH /movies - Error
+    def test_patch_movie_error(self):
+        setup_response = self.client().post('/movies', json={"title": "Men in Black2", "date": "2002"})
+        data_setup = json.loads(setup_response.data.decode('utf-8'))
+        res = self.client().patch('/movies/'+str(data_setup['movie_id']+2000))
+        movie = Movies.query.filter(Movies.id==data_setup['movie_id']).one_or_none()
+        data = json.loads(res.data.decode('utf-8')) 
         self.assertEqual(res.status_code, 422)
         self.assertEqual(data['success'], False)
 
-    '''
+
+
 
     #Test POST /actors =======================================
     def test_create_new_actor(self):
@@ -173,6 +175,28 @@ class CapstoneTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 404)
         self.assertEqual(data['success'], False)
         self.assertEqual(bool(actor.id), not None)
+
+
+   #Test PATCH /actors
+    def test_patch_actor(self):
+        setup_response = self.client().post('/actors', json={"name": "Meg Ryan", "gender": "female", "age": "32"})
+        data_setup = json.loads(setup_response.data.decode('utf-8'))
+        res = self.client().patch('/actors/'+str(data_setup['actor_id']), json={"name": "Bud Spencer", "gender": "male", "age": "57"})
+        actor = Actors.query.filter(Actors.id==data_setup['actor_id']).one_or_none()
+        data = json.loads(res.data.decode('utf-8')) 
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(actor.name, "Bud Spencer")
+
+   #Test PATCH /actors - Error
+    def test_patch_actor_error(self):
+        setup_response = self.client().post('/actors', json={"name": "Meg Ryan", "gender": "female", "age": "32"})
+        data_setup = json.loads(setup_response.data.decode('utf-8'))
+        res = self.client().patch('/actors/'+str(data_setup['actor_id']+2000))
+        actor = Actors.query.filter(Actors.id==data_setup['actor_id']).one_or_none()
+        data = json.loads(res.data.decode('utf-8')) 
+        self.assertEqual(res.status_code, 422)
+        self.assertEqual(data['success'], False)
 
 
 
