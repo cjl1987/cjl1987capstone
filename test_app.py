@@ -50,14 +50,14 @@ class CapstoneTestCase(unittest.TestCase):
     Tests to be executed
     """
         
-    #Test POST endpoint to create new movie
+    #Test POST /movies
     def test_create_new_movie(self):
         res = self.client().post('/movies', json={"title": "Men in Black2", "date": "2002"})
         data = json.loads(res.data.decode('utf-8'))
         self.assertEqual(res.status_code, 201)
         self.assertEqual(data['success'], True)
 
-    #Test POST endpoint to create new movie - Error
+    #Test POST /movies - Error
     def test_create_new_movie_error(self):
         res = self.client().post('/movies', json={"title": "Men in Black2"})
         data = json.loads(res.data.decode('utf-8'))
@@ -79,14 +79,58 @@ class CapstoneTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 404)
         self.assertEqual(data['success'], False)
 
-    #Test POST endpoint to create new actor
+   #Test DELETE /movies
+    def test_delete_movie(self):
+        setup_response = self.client().post('/movies', json={"title": "Men in Black2", "date": "2002"})
+        data_setup = json.loads(setup_response.data.decode('utf-8'))
+        res = self.client().delete('/movies/'+str(data_setup['movie_id']))
+        movie = Movies.query.filter(Movies.id==data_setup['movie_id']).one_or_none()
+        data = json.loads(res.data.decode('utf-8')) 
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(movie, None)
+
+   #Test DELETE /movies - Error
+    def test_delete_movie_error(self):
+        setup_response = self.client().post('/movies', json={"title": "Men in Black2", "date": "2002"})
+        data_setup = json.loads(setup_response.data.decode('utf-8'))
+        res = self.client().delete('/movies/'+str(data_setup['movie_id']+2000))
+        movie = Movies.query.filter(Movies.id==data_setup['movie_id']).one_or_none()
+        data = json.loads(res.data.decode('utf-8')) 
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(bool(movie.id), not None)
+    '''
+    #Test DELETE  /questions/<int:question_id>
+    def test_delete_question_by_id(self):
+        res = self.client().delete('/questions/5')
+        data = json.loads(res.data.decode('utf-8'))
+
+        question = Question.query.filter(Question.id==5).one_or_none()
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['deleted_question'], 5)
+        self.assertEqual(question, None)
+
+    #Test DELETE  /questions/<int:question_id>  - Error
+    def test_422_if_question_does_not_exist(self):
+        res = self.client().delete('/questions/1000')
+        data = json.loads(res.data.decode('utf-8'))
+
+        self.assertEqual(res.status_code, 422)
+        self.assertEqual(data['success'], False)
+
+    '''
+
+    #Test POST /actors =======================================
     def test_create_new_actor(self):
         res = self.client().post('/actors', json={"name": "Meg Ryan", "gender": "female", "age": "32"})
         data = json.loads(res.data.decode('utf-8'))
         self.assertEqual(res.status_code, 201)
         self.assertEqual(data['success'], True)
 
-    #Test POST endpoint to create new actor - Error
+    #Test POST /actors - Error
     def test_create_new_actor_error(self):
         res = self.client().post('/actors', json={"name": "Meg Ryan", "gender": "female"})
         data = json.loads(res.data.decode('utf-8'))
@@ -107,6 +151,29 @@ class CapstoneTestCase(unittest.TestCase):
         data = json.loads(res.data.decode('utf-8'))
         self.assertEqual(res.status_code, 404)
         self.assertEqual(data['success'], False)
+
+   #Test DELETE /actors
+    def test_delete_actor(self):
+        setup_response = self.client().post('/actors', json={"name": "Meg Ryan", "gender": "female", "age": "32"})
+        data_setup = json.loads(setup_response.data.decode('utf-8'))
+        res = self.client().delete('/actors/'+str(data_setup['actor_id']))
+        actor = Actors.query.filter(Actors.id==data_setup['actor_id']).one_or_none()
+        data = json.loads(res.data.decode('utf-8')) 
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(actor, None)
+
+   #Test DELETE /actors - Error
+    def test_delete_actor_error(self):
+        setup_response = self.client().post('/actors', json={"name": "Meg Ryan", "gender": "female", "age": "32"})
+        data_setup = json.loads(setup_response.data.decode('utf-8'))
+        res = self.client().delete('/actors/'+str(data_setup['actor_id']+2000))
+        actor = Actors.query.filter(Actors.id==data_setup['actor_id']).one_or_none()
+        data = json.loads(res.data.decode('utf-8')) 
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(bool(actor.id), not None)
+
 
 
 '''  

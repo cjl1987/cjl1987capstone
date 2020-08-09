@@ -63,11 +63,37 @@ def create_app(test_config=None):
             movie.insert()
             # return json response
             return jsonify({
-                            "success": True
+                            "success": True, 
+                            "movie_id": movie.id
                             }), 201
         except Exception:
             abort(422)
     
+
+
+    # DELETE /movies/<int:movie_id>
+    @app.route('/movies/<int:movie_id>', methods=['DELETE'])
+    #@requires_auth('delete:drinks')                                            # uncomment here
+    def delete_movie(movie_id):                                            #change to def delete_drink(jwt, drink_id):
+        try:
+            # get movie by movie_id
+            movie = Movies.query.filter(Movies.id == movie_id).one_or_none()
+            # error 404
+            if movie is None:
+                return jsonify({
+                                'success': False,
+                                'error': 'Movie is not found', 
+                                'movie_id': movie_id
+                                }), 404
+            # delete row in data base
+            movie.delete()
+            return jsonify({
+                            'success': True,
+                            'deleted': movie_id
+                            }), 200
+        except Exception:
+            abort(422)
+
 
 
     #--------------------------------------------actors----------------------------
@@ -115,12 +141,38 @@ def create_app(test_config=None):
             actor.insert()
             # return json response
             return jsonify({
-                            "success": True
+                            "success": True,
+                            "actor_id": actor.id
                             }), 201
         except Exception:
             abort(422)
     
     
+    # DELETE  /actors/<int:actor_id>
+    @app.route('/actors/<int:actor_id>', methods=['DELETE'])
+    #@requires_auth('delete:drinks')                                            # uncomment here
+    def delete_actor(actor_id):                                            #change to def delete_drink(jwt, drink_id):
+        try:
+            # get actor by actor_id
+            actor = Actors.query.filter(Actors.id == actor_id).one_or_none()
+            # error 404
+            if actor is None:
+                return jsonify({
+                                'success': False,
+                                'error': 'Actor is not found', 
+                                'actor_id': actor_id
+                                }), 404
+            # delete row in data base
+            actor.delete()
+            return jsonify({
+                            'success': True,
+                            'deleted': actor_id
+                            }), 200
+        except Exception:
+            abort(422)
+
+
+
     # Error Handling
 
     # Error-Handler 422
