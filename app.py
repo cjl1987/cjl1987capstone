@@ -20,6 +20,7 @@ def create_app(test_config=None):
     def be_cool():
         return "Be cool, man, be coooool! You're almost a FSND grad!"
 
+
     # GET Movies
     @app.route('/movies', methods=['GET'])
     #@requires_auth('post:drinks')                                          #to be uncommented later
@@ -31,7 +32,6 @@ def create_app(test_config=None):
             for movie in movies_all: 
                 formatted_movies.append(movie.format())
             
-
             # return json response
             return jsonify({
                             "success": True,
@@ -52,25 +52,64 @@ def create_app(test_config=None):
 
         # check whether user input is complete
         if new_title is None:
-            abort(422)
+            abort(400)                                                 #create here correct error-handler
         if new_date is None:
-            abort(422)
+            abort(400)
 
         try:
             # add row in data base
             movie = Movies(title=new_title, date=new_date)
             movie.insert()
-            selection = Movies.query.all()
-
-
             # return json response
             return jsonify({
-                            "success": True,
-                            "movies": "List of movies",
-                            "movies1": selection[0].title
+                            "success": True
                             }), 201
         except Exception:
             abort(422)
+    
+    
+    
+    # Error Handling
+
+    # Error-Handler 422
+    @app.errorhandler(422)
+    def unprocessable(error):
+        return jsonify({
+                        "success": False,
+                        "error": 422,
+                        "message": "unprocessable"
+                        }), 422
+
+    '''
+    # Error-Handler 404
+    @app.errorhandler(404)
+    def resource_not_found(error):
+        return jsonify({
+                        "success": False,
+                        "error": 404,
+                        "message": "resource not found"
+                        }), 404
+    '''
+
+    # Error-Handler 400
+    @app.errorhandler(400)
+    def bad_request(error):
+        return jsonify({
+                        "success": False,
+                        "error": 400,
+                        "message": "bad request"
+                        }), 400
+
+    '''
+    # Error-Handler AuthErrors
+    @app.errorhandler(AuthError)
+    def auth_error(error):
+        return jsonify({
+            "success": False,
+            "error": error.status_code,
+            "message": error.error['description']
+        }), error.status_code
+    '''
 
 
     return app
