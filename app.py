@@ -2,6 +2,7 @@ import os
 from flask import Flask, request, abort, jsonify
 from models import setup_db, Movies, Actors
 from flask_cors import CORS
+from auth import AuthError, requires_auth
 
 def create_app(test_config=None):
 
@@ -24,8 +25,8 @@ def create_app(test_config=None):
     #----------------movies-------------------------------------
     # GET /movies
     @app.route('/movies', methods=['GET'])
-    #@requires_auth('post:drinks')                                          #to be uncommented later
-    def get_movie():                                                  # to be replaced by: <def create_drink(jwt):>   JWT!!
+    @requires_auth('get:movies')                                        
+    def get_movie(jwt):                                                 
         try:
             formatted_movies = []
             movies_all = Movies.query.all()   
@@ -44,8 +45,8 @@ def create_app(test_config=None):
 
     # POST /movies expects a body with 'title' and 'date'
     @app.route('/movies', methods=['POST'])
-    #@requires_auth('post:drinks')                                          #to be uncommented later
-    def create_movie():                                                  # to be replaced by: <def create_drink(jwt):>   JWT!!
+    @requires_auth('post:movies')
+    def create_movie(jwt):
         # get json object
         body = request.get_json()
         new_title = body.get('title', None)
@@ -73,8 +74,8 @@ def create_app(test_config=None):
 
     # DELETE /movies/<int:movie_id>
     @app.route('/movies/<int:movie_id>', methods=['DELETE'])
-    #@requires_auth('delete:drinks')                                            # uncomment here
-    def delete_movie(movie_id):                                            #change to def delete_drink(jwt, drink_id):
+    @requires_auth('delete:movies')
+    def delete_movie(jwt, movie_id):
         try:
             # get movie by movie_id
             movie = Movies.query.filter(Movies.id == movie_id).one_or_none()
@@ -97,8 +98,8 @@ def create_app(test_config=None):
 
     # PATCH /movies
     @app.route('/movies/<int:movie_id>', methods=['PATCH'])
-    #@requires_auth('patch:drinks')                                     #uncomment later
-    def movies_update(movie_id):                                   # Origin: def drinks_update(jwt, drink_id): 
+    @requires_auth('patch:movies')
+    def movies_update(jwt ,movie_id):
         # load PATCH body
         body = request.get_json()
         # get element by id
@@ -126,8 +127,8 @@ def create_app(test_config=None):
     #--------------actors----------------------------
     # GET /actors
     @app.route('/actors', methods=['GET'])
-    #@requires_auth('post:drinks')                                    # to be uncommented later
-    def get_actor():                                                  # to be replaced by: <def create_drink(jwt):>   JWT!!
+    @requires_auth('get:actors')
+    def get_actor(jwt):
         try:
             formatted_actors = []
             actors_all = Actors.query.all()   
@@ -138,7 +139,7 @@ def create_app(test_config=None):
             # return json response
             return jsonify({
                             "success": True,
-                            "movies": formatted_actors,
+                            "actors": formatted_actors,
                             }), 200
         except Exception:
             abort(422)
@@ -146,8 +147,8 @@ def create_app(test_config=None):
 
     # POST /actors expects a body with 'name' and 'gender' and 'age'
     @app.route('/actors', methods=['POST'])
-    #@requires_auth('post:drinks')                                       # to be uncommented later
-    def create_actor():                                                  # to be replaced by: <def create_drink(jwt):>   JWT!!
+    @requires_auth('post:actors')
+    def create_actor(jwt):
         # get json object
         body = request.get_json()
         new_name = body.get('name', None)
@@ -177,8 +178,8 @@ def create_app(test_config=None):
     
     # DELETE  /actors/<int:actor_id>
     @app.route('/actors/<int:actor_id>', methods=['DELETE'])
-    #@requires_auth('delete:drinks')                                            # uncomment here
-    def delete_actor(actor_id):                                            #change to def delete_drink(jwt, drink_id):
+    @requires_auth('delete:actors')
+    def delete_actor(jwt, actor_id):
         try:
             # get actor by actor_id
             actor = Actors.query.filter(Actors.id == actor_id).one_or_none()
@@ -202,8 +203,8 @@ def create_app(test_config=None):
 
     # PATCH /actors
     @app.route('/actors/<int:actor_id>', methods=['PATCH'])
-    #@requires_auth('patch:drinks')                                     #uncomment later
-    def actors_update(actor_id):                                   # Origin: def drinks_update(jwt, drink_id): 
+    @requires_auth('patch:actors')
+    def actors_update(jwt, actor_id):
         # load PATCH body
         body = request.get_json()
         # get element by id
@@ -259,16 +260,16 @@ def create_app(test_config=None):
                         "message": "bad request"
                         }), 400
 
-    '''
+
     # Error-Handler AuthErrors
     @app.errorhandler(AuthError)
     def auth_error(error):
         return jsonify({
-            "success": False,
-            "error": error.status_code,
-            "message": error.error['description']
-        }), error.status_code
-    '''
+                        "success": False,
+                        "error": error.status_code,
+                        "message": error.error['description']
+                        }), error.status_code
+                
 
 
     return app
