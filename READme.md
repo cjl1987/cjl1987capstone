@@ -79,6 +79,40 @@ python test_app.py
         - on heroku.com folling the base link https://cjl1987capstone.herokuapp.com/
 	- Authentication: This version does require a valid bearer token
 
+
+###Roles
+- Casting Assistant
+		  "permissions": 
+			[
+			    "get:actors",
+			    "get:movies",
+			]
+- Casting Director
+		  "permissions": 
+			[
+			    "delete:actors",
+			    "get:actors",
+			    "get:movies",
+			    "patch:actors",
+			    "patch:movies",
+			    "post:actors",
+
+			]
+- Executive Producer
+		  "permissions": 
+			[
+			    "delete:actors",
+			    "delete:movies",
+			    "get:actors",
+			    "get:movies",
+			    "patch:actors",
+			    "patch:movies",
+			    "post:actors",
+			    "post:movies"
+			]
+
+
+
 ###Endpoints
 
 ###Error Handling
