@@ -4,36 +4,27 @@ from models import setup_db, Movies, Actors
 from flask_cors import CORS
 from auth import AuthError, requires_auth
 
+
 def create_app(test_config=None):
 
     app = Flask(__name__)
-    setup_db(app)                      
+    setup_db(app)
     CORS(app)
 
     @app.route('/')
     def get_greeting():
-        excited = os.environ['EXCITED']
-        greeting = "Hello" 
-        if excited == 'true': greeting = greeting + "!!!!!"
+        greeting = "Hello"
         return greeting
 
-    @app.route('/coolkids')
-    def be_cool():
-        return "Be cool, man, be coooool! You're almost a FSND grad!"
-
-
-    #----------------movies-------------------------------------
     # GET /movies
     @app.route('/movies', methods=['GET'])
-    @requires_auth('get:movies')                                        
-    def get_movie(jwt):                                                 
+    @requires_auth('get:movies')
+    def get_movie(jwt):
         try:
             formatted_movies = []
-            movies_all = Movies.query.all()   
-
-            for movie in movies_all: 
+            movies_all = Movies.query.all()
+            for movie in movies_all:
                 formatted_movies.append(movie.format())
-            
             # return json response
             return jsonify({
                             "success": True,
@@ -41,7 +32,6 @@ def create_app(test_config=None):
                             }), 200
         except Exception:
             abort(422)
-
 
     # POST /movies expects a body with 'title' and 'date'
     @app.route('/movies', methods=['POST'])
@@ -54,7 +44,7 @@ def create_app(test_config=None):
 
         # check whether user input is complete
         if new_title is None:
-            abort(400)                                                
+            abort(400)
         if new_date is None:
             abort(400)
 
@@ -64,13 +54,11 @@ def create_app(test_config=None):
             movie.insert()
             # return json response
             return jsonify({
-                            "success": True, 
+                            "success": True,
                             "movie_id": movie.id
                             }), 201
         except Exception:
             abort(422)
-    
-
 
     # DELETE /movies/<int:movie_id>
     @app.route('/movies/<int:movie_id>', methods=['DELETE'])
@@ -83,7 +71,7 @@ def create_app(test_config=None):
             if movie is None:
                 return jsonify({
                                 'success': False,
-                                'error': 'Movie is not found', 
+                                'error': 'Movie is not found',
                                 'movie_id': movie_id
                                 }), 404
             # delete row in data base
@@ -95,11 +83,10 @@ def create_app(test_config=None):
         except Exception:
             abort(422)
 
-
     # PATCH /movies
     @app.route('/movies/<int:movie_id>', methods=['PATCH'])
     @requires_auth('patch:movies')
-    def movies_update(jwt ,movie_id):
+    def movies_update(jwt, movie_id):
         # load PATCH body
         body = request.get_json()
         # get element by id
@@ -122,20 +109,15 @@ def create_app(test_config=None):
         except Exception:
             abort(422)
 
-
-
-    #--------------actors----------------------------
     # GET /actors
     @app.route('/actors', methods=['GET'])
     @requires_auth('get:actors')
     def get_actor(jwt):
         try:
             formatted_actors = []
-            actors_all = Actors.query.all()   
-
-            for actor in actors_all: 
+            actors_all = Actors.query.all()
+            for actor in actors_all:
                 formatted_actors.append(actor.format())
-            
             # return json response
             return jsonify({
                             "success": True,
@@ -143,7 +125,6 @@ def create_app(test_config=None):
                             }), 200
         except Exception:
             abort(422)
-
 
     # POST /actors expects a body with 'name' and 'gender' and 'age'
     @app.route('/actors', methods=['POST'])
@@ -157,7 +138,7 @@ def create_app(test_config=None):
 
         # check whether user input is complete
         if new_name is None:
-            abort(400)                                                
+            abort(400)
         if new_gender is None:
             abort(400)
         if new_age is None:
@@ -174,8 +155,7 @@ def create_app(test_config=None):
                             }), 201
         except Exception:
             abort(422)
-    
-    
+
     # DELETE  /actors/<int:actor_id>
     @app.route('/actors/<int:actor_id>', methods=['DELETE'])
     @requires_auth('delete:actors')
@@ -187,7 +167,7 @@ def create_app(test_config=None):
             if actor is None:
                 return jsonify({
                                 'success': False,
-                                'error': 'Actor is not found', 
+                                'error': 'Actor is not found',
                                 'actor_id': actor_id
                                 }), 404
             # delete row in data base
@@ -198,8 +178,6 @@ def create_app(test_config=None):
                             }), 200
         except Exception:
             abort(422)
-
-
 
     # PATCH /actors
     @app.route('/actors/<int:actor_id>', methods=['PATCH'])
@@ -229,10 +207,7 @@ def create_app(test_config=None):
         except Exception:
             abort(422)
 
-
-
     # ------------------------Error Handling -------------------
-
     # Error-Handler 422
     @app.errorhandler(422)
     def unprocessable(error):
@@ -260,7 +235,6 @@ def create_app(test_config=None):
                         "message": "bad request"
                         }), 400
 
-
     # Error-Handler AuthErrors
     @app.errorhandler(AuthError)
     def auth_error(error):
@@ -269,13 +243,11 @@ def create_app(test_config=None):
                         "error": error.status_code,
                         "message": error.error['description']
                         }), error.status_code
-                
-
 
     return app
+
 
 app = create_app()
 
 if __name__ == '__main__':
     app.run()
-
