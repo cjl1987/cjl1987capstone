@@ -39,8 +39,8 @@ def create_app(test_config=None):
     def create_movie(jwt):
         # get json object
         body = request.get_json()
-        new_title = body.get('title', None)
-        new_date = body.get('date', None)
+        new_title = body.get('title')
+        new_date = body.get('date')
 
         # check whether user input is complete
         if new_title is None:

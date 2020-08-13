@@ -5,51 +5,52 @@ from functools import wraps
 from jose import jwt
 from urllib.request import urlopen
 
-#database_path = os.environ['DATABASE_URL']
+# database_path = os.environ['DATABASE_URL']
 
 
 AUTH0_DOMAIN = os.environ['AUTH0_DOMAIN']
 ALGORITHMS = os.environ['ALGORITHMS']
 API_AUDIENCE = os.environ['API_AUDIENCE']
 
-## AuthError Exception
+# AuthError Exception
 '''
 AuthError Exception
 A standardized way to communicate auth failure modes
 '''
+
+
 class AuthError(Exception):
     def __init__(self, error, status_code):
         self.error = error
         self.status_code = status_code
 
 
-## Auth Header
+# Auth Header
 
-#Get and validate header for Authorization and header
+# Get and validate header for Authorization and header
 def get_token_auth_header():
-    
+
     if 'Authorization' not in request.headers:
         raise AuthError({
                         'code': 'Authorization not sent',
-                        'description': 'Authorization is not included in Header.'
+                        'description': 'Authorization not in Header.'
                         }, 401)
 
     auth_header = request.headers['Authorization']
     headers_parts = auth_header.split(' ')
 
     if len(headers_parts) != 2:
-         raise AuthError({
+        raise AuthError({
                         'code': 'Authorization not valid',
-                        'description': 'Authorization does not contain two words'
+                        'description': 'Does not contain two words'
                         }, 401)
     elif headers_parts[0].lower() != 'bearer':
-         raise AuthError({
+        raise AuthError({
                         'code': 'Authorization not valid',
-                        'description': 'Authorization does not include the word -bearer-'
+                        'description': 'The word -bearer- is missing'
                         }, 401)
 
     return headers_parts[1]
-
 
 
 # Check permissions
@@ -68,16 +69,15 @@ def check_permissions(permission, payload):
     return True
 
 
-
-#Verify jwt
+# Verify jwt
 def verify_decode_jwt(token):
     # GET THE PUBLIC KEY FROM AUTH0
     jsonurl = urlopen(f'https://{AUTH0_DOMAIN}/.well-known/jwks.json')
     jwks = json.loads(jsonurl.read())
-    
+
     # GET THE DATA IN THE HEADER
     unverified_header = jwt.get_unverified_header(token)
-    
+
     # CHOOSE OUR KEY
     rsa_key = {}
     if 'kid' not in unverified_header:
@@ -95,7 +95,7 @@ def verify_decode_jwt(token):
                 'n': key['n'],
                 'e': key['e']
             }
-    
+
     # Finally, verify!!!
     if rsa_key:
         try:
@@ -119,7 +119,7 @@ def verify_decode_jwt(token):
         except jwt.JWTClaimsError:
             raise AuthError({
                 'code': 'invalid_claims',
-                'description': 'Incorrect claims. Please, check the audience and issuer.'
+                'description': 'Incorrect claims. Check the audience / issuer.'
             }, 401)
         except Exception:
             raise AuthError({
@@ -132,7 +132,7 @@ def verify_decode_jwt(token):
             }, 400)
 
 
-#Decorator 
+# Decorator
 def requires_auth(permission=''):
     def requires_auth_decorator(f):
         @wraps(f)
@@ -140,7 +140,7 @@ def requires_auth(permission=''):
             token = get_token_auth_header()
             try:
                 payload = verify_decode_jwt(token)
-            except:
+            except Exception:
                 raise AuthError({
                         'code': 'Authorization not valid',
                         'description': 'Authorization is not valid'

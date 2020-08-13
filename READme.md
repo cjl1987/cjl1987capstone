@@ -1,5 +1,8 @@
 #Full Stack Capstone Project: Casting Agency 
 
+As a Full Stack Nano Degree student of Udacity I created this project as a capstone project. Within this project I applied everything I learnt so far. It is my masterpiece.
+
+From content wise the following is implemented:
 The Casting Agency models a company that is responsible for creating movies and managing and assigning actors to those movies. You are an Executive Producer within the company and are creating a system to simplify and streamline your process. 
 
 Models:
@@ -45,7 +48,7 @@ source env/bin/activate
 Then install dependencies by navigating to the `/cjl1987capstone` directory and running:
 
 ```bash
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 This will install all of the required packages we selected within the `requirements.txt` file.
@@ -67,7 +70,7 @@ To run the tests, first set the environment variables and then start the test sc
 
 ```bash
 . setupsh
-python test_app.py
+python3 test_app.py
 ```
 
 
